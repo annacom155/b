@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信充值</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Arial', '黑体', sans-serif;
+            background: linear-gradient(135deg, #ff0000 0%, #ff4500 25%, #ffd700 50%, #ff6600 75%, #cc0000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,215,0,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,69,0,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: backgroundPulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundPulse {
+            0% { filter: brightness(1) saturate(1); }
+            100% { filter: brightness(1.05) saturate(1.1); }
+        }
+
+        .recharge-container {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(145deg, #ffffff 0%, #fefefe 100%);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 
+                0 20px 40px rgba(255, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 215, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            animation: containerFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .recharge-header {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .recharge-header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff0000, #ffd700, #ff0000);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4);
+        }
+
+        .recharge-title {
+            color: #cc0000;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            letter-spacing: 3px;
+            text-shadow: 
+                2px 2px 0px #ffd700,
+                4px 4px 8px rgba(204, 0, 0, 0.3),
+                0 0 20px rgba(255, 215, 0, 0.3);
+            font-family: 'Arial Black', '黑体', sans-serif;
+            background: linear-gradient(45deg, #cc0000, #ff0000, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .recharge-subtitle {
+            color: #8b0000;
+            font-size: 16px;
+            font-weight: bold;
+            font-style: italic;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .warning-message {
+            background: linear-gradient(135deg, #ffff00 0%, #ffd700 50%, #ffff88 100%);
+            color: #cc0000;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            border: 3px solid #ff4500;
+            border-left: 6px solid #ffd700;
+            box-shadow: 
+                inset 0 2px 6px rgba(255, 215, 0, 0.3),
+                0 4px 12px rgba(255, 69, 0, 0.2);
+            font-weight: 900;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .warning-message::before {
+            content: '⚡';
+            font-size: 20px;
+            margin-right: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .order-info {
+            background: linear-gradient(135deg, #ff6666 0%, #ff4444 100%);
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 25px;
+            border: 3px solid #cc0000;
+            box-shadow: 
+                inset 0 2px 6px rgba(0,0,0,0.2),
+                0 4px 12px rgba(255, 0, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .order-label {
+            font-weight: 900;
+            color: #ffff00;
+            margin-bottom: 6px;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-value {
+            font-weight: 900;
+            color: #ffffff;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .amount-selection {
+            margin-bottom: 30px;
+        }
+
+        .amount-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .amount-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border: 3px solid #ff4500;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff 0%, #fff5f5 100%);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 
+                0 6px 12px rgba(255, 69, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .amount-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 69, 0, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .amount-option:hover {
+            border-color: #ffd700;
+            box-shadow: 
+                0 8px 16px rgba(255, 69, 0, 0.4),
+                0 0 20px rgba(255, 215, 0, 0.3),
+                0 6px 12px rgba(0,0,0,0.2);
+            transform: translateY(-4px) scale(1.02);
+            background: linear-gradient(145deg, #fff8f0 0%, #fff0e6 100%);
+        }
+
+        .amount-option:hover::before {
+            opacity: 1;
+        }
+
+        .amount-option.selected {
+            border-color: #ffd700;
+            background: linear-gradient(145deg, #fffaf0 0%, #fffbf0 100%);
+            color: #cc0000;
+            box-shadow: 
+                0 8px 16px rgba(255, 215, 0, 0.5),
+                inset 0 2px 4px rgba(255, 215, 0, 0.2),
+                0 0 20px rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .amount-option.selected::before {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 69, 0, 0.1) 100%);
+        }
+
+        .amount-label {
+            font-weight: 900;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .amount-value {
+            font-weight: 900;
+            font-size: 22px;
+            color: #cc0000;
+            font-family: 'Arial Black', 'Times New Roman', monospace;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .amount-option.selected .amount-value {
+            color: #8b0000;
+        }
+
+        .confirm-button {
+            width: 100%;
+            background: linear-gradient(145deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Arial Black', '黑体', sans-serif;
+            text-shadow: 
+                2px 2px 0px #990000,
+                4px 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 
+                0 8px 16px rgba(204, 0, 0, 0.4),
+                0 0 0 2px rgba(255, 215, 0, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confirm-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .confirm-button:hover::before {
+            left: 100%;
+        }
+
+        .confirm-button:hover:not(:disabled) {
+            background: linear-gradient(145deg, #cc0000 0%, #990000 50%, #660000 100%);
+            box-shadow: 
+                0 12px 24px rgba(204, 0, 0, 0.5),
+                0 0 0 2px rgba(255, 215, 0, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                0 0 25px rgba(255, 215, 0, 0.3);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .confirm-button:active:not(:disabled) {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 
+                0 4px 8px rgba(204, 0, 0, 0.4),
+                0 0 0 2px rgba(255, 215, 0, 0.2),
+                inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .confirm-button:disabled {
+            background: linear-gradient(145deg, #cccccc 0%, #999999 50%, #666666 100%);
+            color: #666666;
+            cursor: not-allowed;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: none;
+            transform: none;
+        }
+
+        .qr-code-section {
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .qr-code-section.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .qr-code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .qr-code-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #cc0000;
+            font-family: 'Arial Black', '黑体', sans-serif;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+        }
+
+        .back-button {
+            background: linear-gradient(145deg, #ff4500 0%, #cc3300 100%);
+            color: #ffffff;
+            border: 3px solid #ffd700;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Arial Black', '黑体', sans-serif;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(255, 69, 0, 0.3);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(145deg, #cc3300 0%, #992200 100%);
+            box-shadow: 
+                0 6px 12px rgba(255, 69, 0, 0.4),
+                0 0 15px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+            color: #ffff00;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .timer-warning {
+            background: linear-gradient(135deg, #ffff88 0%, #ffdd44 100%);
+            color: #cc0000;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            border: 3px solid #ff4500;
+            border-left: 6px solid #ffd700;
+            box-shadow: 
+                inset 0 2px 6px rgba(255, 215, 0, 0.3),
+                0 4px 12px rgba(255, 69, 0, 0.2);
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .timer-warning.show {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .timer-warning::before {
+            content: '⏱️ ';
+            font-weight: bold;
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        .order-info {
+            background: linear-gradient(135deg, #ff5555 0%, #ff3333 100%);
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border: 3px solid #cc0000;
+            box-shadow: 
+                inset 0 2px 6px rgba(0,0,0,0.2),
+                0 4px 12px rgba(255, 0, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .qr-code-image {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 20px;
+            border: 4px solid #cc0000;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666666;
+            font-size: 14px;
+            background: linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%);
+            box-shadow: 
+                inset 0 3px 6px rgba(0,0,0,0.1),
+                0 6px 16px rgba(255, 0, 0, 0.2),
+                0 0 0 2px rgba(255, 215, 0, 0.1);
+            position: relative;
+        }
+
+        .qr-code-image::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #ff0000, #ffd700, #ff0000);
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0.3;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .qr-code-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .qr-code-text {
+            color: #333333;
+            font-size: 14px;
+            line-height: 1.5;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        .countdown-timer {
+            background: linear-gradient(135deg, #0066ff 0%, #0044cc 100%);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            display: inline-block;
+            border: 3px solid #003399;
+            box-shadow: 
+                inset 0 2px 6px rgba(0, 51, 153, 0.3),
+                0 4px 12px rgba(0, 102, 255, 0.3);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .countdown-timer.countdown-expired {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: #ffffff;
+            border-color: #990000;
+            box-shadow: 
+                inset 0 2px 6px rgba(153, 0, 0, 0.3),
+                0 4px 12px rgba(255, 0, 0, 0.3);
+            animation: urgentPulse 0.5s infinite alternate;
+        }
+
+        @keyframes urgentPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        @media (max-width: 480px) {
+            .recharge-container {
+                padding: 20px 15px;
+                margin: 10px;
+            }
+            
+            .recharge-title {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+            
+            .amount-option {
+                padding: 18px 20px;
+                font-size: 15px;
+            }
+            
+            .amount-value {
+                font-size: 20px;
+            }
+            
+            .qr-code-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            
+            .qr-code-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recharge-container">
+        <!-- 充值选择界面 -->
+        <div id="rechargeSelection" class="selection-view">
+            <div class="recharge-header">
+                <h1 class="recharge-title">微信充值</h1>
+                <p class="recharge-subtitle">ENERGY CHARGE</p>
+            </div>
+
+            <div class="warning-message">
+                ⚡ 充值提醒：如充值后余额异常请立即联系客服
+            </div>
+
+            <div class="order-info">
+                <div class="order-label">订单号</div>
+                <div class="order-value" id="orderNumber">-</div>
+            </div>
+
+            <div class="amount-selection">
+                <div class="amount-options">
+                    <div class="amount-option" data-amount="150">
+                        <span class="amount-label">微信充值</span>
+                        <span class="amount-value">¥150</span>
+                    </div>
+                    <div class="amount-option" data-amount="500">
+                        <span class="amount-label">微信充值</span>
+                        <span class="amount-value">¥200</span>
+                    </div>
+                    <div class="amount-option" data-amount="1000">
+                        <span class="amount-label">微信充值</span>
+                        <span class="amount-value">¥500</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="confirmButton" class="confirm-button" disabled>确认支付</button>
+        </div>
+
+        <!-- 二维码显示界面 -->
+        <div id="qrCodeSection" class="qr-code-section">
+            <div class="qr-code-header">
+                <h2 class="qr-code-title">扫码支付</h2>
+                <button id="backButton" class="back-button">返回选择</button>
+            </div>
+            
+            <div class="warning-message">
+                ⚡ 充值提醒：如充值后余额异常请立即联系客服
+            </div>
+
+            <div class="order-info">
+                <div class="order-label">订单号</div>
+                <div class="order-value" id="qrOrderNumber">-</div>
+            </div>
+
+            <div id="timerWarning" class="timer-warning">
+                ⏰ 支付倒计时：<span id="countdown" class="countdown-timer">02:00</span>
+            </div>
+
+            <div id="qrCodeImage" class="qr-code-image">
+                <span id="qrCodePlaceholder">正在加载支付二维码...</span>
+            </div>
+            
+            <div class="qr-code-text">
+                📱 请使用微信扫描上方二维码完成支付<br>
+                支付成功后余额将自动到账
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const amountOptions = document.querySelectorAll('.amount-option');
+        const confirmButton = document.getElementById('confirmButton');
+        const rechargeSelection = document.getElementById('rechargeSelection');
+        const qrCodeSection = document.getElementById('qrCodeSection');
+        const backButton = document.getElementById('backButton');
+        const qrCodeImage = document.getElementById('qrCodeImage');
+        const qrCodePlaceholder = document.getElementById('qrCodePlaceholder');
+        const orderNumberElement = document.getElementById('orderNumber');
+        const qrOrderNumberElement = document.getElementById('qrOrderNumber');
+        const timerWarning = document.getElementById('timerWarning');
+        const countdownElement = document.getElementById('countdown');
+
+        let selectedAmount = null;
+        let currentOrderNumber = '';
+        let countdownTimer = null;
+        let timeLeft = 120;
+
+        function generateOrderNumber() {
+            const now = new Date();
+            const timestamp = now.getTime().toString().slice(-8);
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `WX${timestamp}${random}`;
+        }
+
+        function displayOrderNumber(orderNumber) {
+            orderNumberElement.textContent = orderNumber;
+            qrOrderNumberElement.textContent = orderNumber;
+        }
+
+        function startCountdown() {
+            timeLeft = 120;
+            updateCountdownDisplay();
+            timerWarning.classList.add('show');
+            
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                updateCountdownDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    timerWarning.innerHTML = '<span style="color: #8b0000;">⚠️ 支付已超时，请重新选择</span>';
+                    timerWarning.classList.add('countdown-expired');
+                    
+                    setTimeout(() => {
+                        if (qrCodeSection.classList.contains('show')) {
+                            hideQRCode();
+                        }
+                    }, 3000);
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            countdownElement.textContent = timeString;
+            
+            if (timeLeft <= 30) {
+                countdownElement.style.background = 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)';
+                countdownElement.style.color = '#ffffff';
+                countdownElement.style.borderColor = '#990000';
+            } else {
+                countdownElement.style.background = 'linear-gradient(135deg, #0066ff 0%, #0044cc 100%)';
+                countdownElement.style.color = '#ffffff';
+                countdownElement.style.borderColor = '#003399';
+            }
+        }
+
+        amountOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedAmount = this.dataset.amount;
+                confirmButton.disabled = false;
+            });
+        });
+
+        confirmButton.addEventListener('click', function() {
+            if (selectedAmount) {
+                currentOrderNumber = generateOrderNumber();
+                displayOrderNumber(currentOrderNumber);
+                showQRCode(selectedAmount);
+                startCountdown();
+            }
+        });
+
+        backButton.addEventListener('click', function() {
+            hideQRCode();
+        });
+
+        function showQRCode(amount) {
+            rechargeSelection.style.display = 'none';
+            qrCodeSection.classList.add('show');
+
+            let imagePath = '';
+            switch(amount) {
+                case '150':
+                    imagePath = '/asset/wx150.png';
+                    break;
+                case '500':
+                    imagePath = '/asset/wx150.png';
+                    break;
+                case '1000':
+                    imagePath = '/asset/wx150.png';
+                    break;
+            }
+
+            if (imagePath) {
+                const img = new Image();
+                img.onload = function() {
+                    qrCodePlaceholder.innerHTML = `<img src="${imagePath}" alt="微信支付${amount}元二维码" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                 <div style="display:none; align-items:center; justify-content:center; height:100%; color:#666666; font-size:14px; flex-direction:column;">
+                                                     <div>💰</div>
+                                                     <div style="margin-top:10px;">微信支付 ${amount}元</div>
+                                                 </div>`;
+                };
+                img.onerror = function() {
+                    qrCodePlaceholder.innerHTML = `
+                        <div style="align-items:center; justify-content:center; height:100%; color:#666666; font-size:14px; flex-direction:column;">
+                            <div>📱</div>
+                            <div style="margin-top:10px; font-size:16px; font-weight:bold;">微信支付 ${amount}元</div>
+                            <div style="margin-top:5px; font-size:12px; color:#999999;">二维码加载失败</div>
+                            <div style="margin-top:10px; font-size:12px; color:#666666;">请联系客服获取支付二维码</div>
+                        </div>
+                    `;
+                };
+                img.src = imagePath;
+            } else {
+                qrCodePlaceholder.innerHTML = `
+                    <div style="align-items:center; justify-content:center; height:100%; color:#666666; font-size:14px; flex-direction:column;">
+                        <div>📱</div>
+                        <div style="margin-top:10px; font-size:16px; font-weight:bold;">微信支付 ${selectedAmount}元</div>
+                        <div style="margin-top:5px; font-size:12px; color:#999999;">暂无二维码</div>
+                        <div style="margin-top:10px; font-size:12px; color:#666666;">请联系客服处理</div>
+                    </div>
+                `;
+            }
+        }
+
+        function hideQRCode() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            
+            qrCodeSection.classList.remove('show');
+            rechargeSelection.style.display = 'block';
+            selectedAmount = null;
+            confirmButton.disabled = true;
+            timerWarning.classList.remove('show');
+            timerWarning.classList.remove('countdown-expired');
+            
+            amountOptions.forEach(opt => opt.classList.remove('selected'));
+        }
+
+        window.addEventListener('load', function() {
+        });
+    </script>
+</body>
+</html>

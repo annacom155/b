@@ -1,1 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户账户中心</title>
+    <style>
+        :root {
+            --primary-bg: #f4f1eb;
+            --white: #ffffff;
+            --text-primary: #2c1810;
+            --text-secondary: #6b5b47;
+            --text-muted: #9d8b7a;
+            --gold: #d4af37;
+            --green: #556b2f;
+            --yellow: #daa520;
+            --red: #cd5c5c;
+            --orange: #ff8c00;
+            --vintage-red: #8b0000;
+            --vintage-gold: #b8860b;
+            --vintage-green: #228b22;
+            --vintage-blue: #4169e1;
+            --border-color: #e6dcc6;
+            --shadow: rgba(139, 0, 0, 0.15);
+            --vintage-shadow: rgba(139, 0, 0, 0.2);
+            --vintage-gold-bg: linear-gradient(135deg, #daa520, #b8860b);
+            --vintage-red-bg: linear-gradient(135deg, #cd5c5c, #8b0000);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(222, 184, 135, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #f4f1eb 0%, #ede5d3 100%);
+            color: var(--text-primary);
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            line-height: 1.5;
+            padding-bottom: constant(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px var(--shadow);
+            position: relative;
+        }
+
+        /* 修复功能按钮区域的CSS错误 */
+        .function-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            background: 
+                linear-gradient(135deg, #f4f1eb 0%, #ede5d3 100%);
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .function-buttons::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .function-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 15px 8px;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 12px;
+        }
+
+        .function-btn:active {
+            transform: scale(0.95);
+        }
+
+        .function-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px var(--vintage-shadow);
+        }
+
+        .btn-icon {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 8px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 2px solid var(--vintage-gold);
+            border-radius: 8px;
+            background-color: var(--white);
+            box-shadow: 0 3px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .function-btn:hover .btn-icon {
+            border-color: var(--vintage-red);
+            box-shadow: 0 4px 12px var(--vintage-shadow);
+            transform: scale(1.05);
+        }
+
+        .btn-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 1px var(--shadow);
+        }
+
+        .discount-tag {
+            position: absolute;
+            top: -8px;
+            right: -35px;
+            background: var(--vintage-red-bg);
+            color: var(--white);
+            border-radius: 14px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 28px;
+            text-align: center;
+            box-shadow: 0 2px 6px var(--vintage-shadow);
+            border: 1px solid var(--white);
+            font-family: serif;
+        }
+
+        /* 提现弹窗样式 - 只保留 tx- 前缀版本，确保能正常工作 */
+        .tx-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tx-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .tx-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .tx-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .tx-modal.show .tx-modal-content {
+            transform: scale(1);
+        }
+
+        .tx-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .tx-modal-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tx-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .tx-close-btn:hover {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .tx-modal-body {
+            padding: 0 20px 20px 20px;
+        }
+
+        .tx-form-group {
+            margin-bottom: 20px;
+        }
+
+        .tx-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .tx-form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        .tx-form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .tx-upload-area {
+            position: relative;
+        }
+
+        .tx-file-input {
+            display: none;
+        }
+
+        .tx-upload-placeholder {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            background-color: #fafafa;
+        }
+
+        .tx-upload-placeholder:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .tx-upload-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .tx-upload-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .tx-upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .tx-payment-code-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .tx-modal-footer {
+            padding: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            border-top: 1px solid #eee;
+        }
+
+        .tx-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+
+        .tx-btn-secondary {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .tx-btn-secondary:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .tx-btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tx-btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* 审核中样式 */
+        .tx-processing-content {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .tx-processing-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+
+        .tx-processing-title {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .tx-processing-text {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 用户信息区域 - 修复之前的CSS错误 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 25px 20px;
+            background: 
+                linear-gradient(135deg, #faf8f3 0%, #f4f1eb 50%, #ede5d3 100%);
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .user-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin-right: 18px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background-image: url('/asset/icontx.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 3px solid var(--vintage-gold);
+            box-shadow: 0 4px 12px var(--vintage-shadow);
+            position: relative;
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            background: var(--vintage-gold);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .username {
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 2px var(--shadow);
+        }
+
+        .user-id {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .id-icon {
+            color: var(--vintage-gold);
+            margin-right: 6px;
+            font-weight: bold;
+        }
+
+        .balance {
+            display: flex;
+            align-items: center;
+            color: var(--vintage-red);
+            font-weight: 600;
+            font-size: 17px;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 2px var(--shadow);
+        }
+
+        .balance-icon {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .balance-refresh {
+            margin-left: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .balance-refresh:hover {
+            transform: rotate(180deg);
+        }
+
+        /* 其他部分保持原样... */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background: 
+                linear-gradient(135deg, #faf8f3 0%, #f4f1eb 100%);
+            border-bottom: 3px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px var(--vintage-shadow);
+        }
+
+        .back-btn {
+            font-size: 24px;
+            color: var(--vintage-gold);
+            cursor: pointer;
+            padding: 8px;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px var(--shadow);
+        }
+
+        .back-btn:hover,
+        .back-btn:active {
+            color: var(--vintage-red);
+            transform: scale(1.1);
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .icon-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            transition: all 0.3s ease;
+            font-family: serif;
+        }
+
+        .icon-item:hover,
+        .icon-item:active {
+            color: var(--vintage-gold);
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            filter: drop-shadow(1px 1px 2px var(--shadow));
+        }
+
+        .message-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--vintage-red);
+            color: var(--white);
+            border-radius: 12px;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font: bold 10px serif;
+            font-weight: bold;
+            box-shadow: 0 2px 4px var(--vintage-shadow);
+            border: 2px solid var(--white);
+        }
+
+        /* VIP区域 */
+        .vip-section {
+            margin: 20px;
+            background: var(--vintage-red-bg);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            color: var(--white);
+            box-shadow: 0 8px 20px var(--vintage-shadow);
+            border: 3px solid var(--vintage-gold);
+        }
+
+        .vip-section::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, var(--vintage-gold), var(--vintage-red), var(--vintage-gold));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .vip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .vip-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .vip-tag {
+            background-color: var(--vintage-green);
+            color: var(--white);
+            padding: 3px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 12px;
+            box-shadow: 0 2px 6px var(--shadow);
+            border: 2px solid var(--white);
+        }
+
+        .vip-status {
+            font-size: 15px;
+            opacity: 0.95;
+            font-style: italic;
+            text-shadow: 1px 1px 2px var(--shadow);
+        }
+
+        .arrow-right {
+            color: var(--white);
+            font-size: 20px;
+            opacity: 0.8;
+            text-shadow: 1px 1px 2px var(--shadow);
+        }
+
+        .vip-progress {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .progress-label {
+            margin-right: 12px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+            min-width: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--white), var(--vintage-gold));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            width: 0%;
+            box-shadow: 0 1px 3px var(--shadow);
+        }
+
+        /* 底部菜单 */
+        .bottom-menu {
+            flex: 1;
+            margin: 20px;
+            margin-top: 30px;
+            background: 
+                linear-gradient(135deg, #faf8f3 0%, #f4f1eb 100%);
+            border-radius: 16px;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 6px 18px var(--vintage-shadow);
+            border: 2px solid var(--border-color);
+        }
+
+        .bottom-menu::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--vintage-gold), var(--vintage-red));
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:active {
+            background-color: #f8f9fa;
+            transform: scale(0.98);
+        }
+
+        .menu-item:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-icon-container {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .menu-icon {
+            position: relative;
+            color: var(--vintage-gold);
+            margin-right: 12px;
+            font-size: 22px;
+            flex-shrink: 0;
+            text-shadow: 1px 1px 2px var(--shadow);
+            filter: drop-shadow(1px 1px 2px var(--shadow));
+        }
+
+        .menu-icon.orange {
+            color: var(--orange);
+        }
+
+        .menu-icon.green {
+            color: var(--vintage-green);
+        }
+
+        .menu-icon.red {
+            color: var(--vintage-red);
+        }
+
+        .menu-icon.badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--vintage-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: 18px;
+            box-shadow: 0 2px 6px var(--vintage-shadow);
+            border: 2px solid var(--white);
+        }
+
+        .menu-text {
+            font-size: 16px;
+            color: var(--text-primary);
+            flex: 1;
+            font-family: 'Georgia', serif;
+            font-weight: 500;
+            text-shadow: 1px 1px 1px var(--shadow);
+        }
+
+        .arrow-right-small {
+            color: var(--text-muted);
+            font-size: 16px;
+            flex-shrink: 0;
+            text-shadow: 1px 1px 1px var(--shadow);
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .function-buttons {
+                padding: 18px 0;
+            }
+            
+            .btn-text {
+                font-size: 13px;
+            }
+            
+            .btn-icon {
+                width: 42px;
+                height: 42px;
+            }
+        }
+
+        /* 滚动优化 */
+        .container {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隐藏文本用于屏幕阅读器 */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* 经典装饰元素 */
+        .decorative-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--vintage-gold);
+        }
+
+        .decorative-corner.top-left {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .decorative-corner.top-right {
+            top: 10px;
+            right: 10px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .decorative-corner.bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .decorative-corner.bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* 动画效果 */
+        @keyframes gentle-fade {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            animation: gentle-fade 0.5s ease-in;
+        }
+
+        /* 修复功能按钮区域的CSS错误（续） */
+        .function-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            background: 
+                linear-gradient(135deg, #f4f1eb 0%, #ede5d3 100%);
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .function-buttons::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 用户信息区域 -->
+        <section class="user-info" aria-labelledby="user-info-heading">
+            <div class="avatar" aria-hidden="true"></div>
+            <div class="user-details">
+                <h2 class="username" id="user-info-heading">新用户</h2>
+                <div class="user-id">
+                    <span class="id-icon">👤</span>
+                <span>用户ID: <span id="userId">加载中...</span></span>
+<script>
+  (function() {
+    // 生成一个随机的 15 位字符串（字母 + 数字）
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < 15; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('userId').textContent = result;
+  })();
+</script>
+
+                </div>
+            </div>
+            <div class="balance">
+                <span class="balance-icon">●当前余额:</span>
+                <span>0.00</span>
+                <span class="balance-refresh" onclick="refreshBalance()" title="刷新余额">↻</span>
+            </div>
+        </section>
+
+        <!-- 功能按钮区域 - 修复了CSS错误 -->
+        <section class="function-buttons" aria-labelledby="function-buttons-heading">
+            <h2 class="visually-hidden" id="function-buttons-heading">常用功能</h2>
+            <a href="/pay/webpal.html" class="function-btn" tabindex="0" role="button" aria-label="微信充值">
+                <div class="btn-icon wx-recharge"></div>
+                <div class="btn-text">微信充值</div>
+                <span class="discount-tag">送3.5%</span>
+            </a>
+           <a href="/pay/webtx.html" class="function-btn" tabindex="0" role="button" aria-label="提现">
+    <div class="btn-icon tx-withdraw"></div>
+    <div class="btn-text">提现</div>
+</a>
+
+
+        </section>
+
+        <!-- 提现弹窗 - 只保留这个能正常工作的版本 -->
+        <div id="txWithdrawModal" class="tx-modal" role="dialog" aria-labelledby="txWithdrawModalTitle" aria-hidden="true">
+            <div class="tx-modal-overlay" onclick="hideTxWithdrawModal()"></div>
+            <div class="tx-modal-content" onclick="event.stopPropagation()">
+                <div class="tx-modal-header">
+                    <h3 id="txWithdrawModalTitle" class="tx-modal-title">提现申请</h3>
+                    <button type="button" class="tx-close-btn" onclick="hideTxWithdrawModal()" aria-label="关闭">×</button>
+                </div>
+                <div class="tx-modal-body">
+                    <form id="txWithdrawForm">
+                        <div class="tx-form-group">
+                            <label for="txWithdrawAmount" class="tx-form-label">提现金额</label>
+                            <input 
+                                ty
+                                pe="number" 
+                                id="txWithdrawAmount" 
+                                name="txWithdrawAmount" 
+                                class="tx-form-input" 
+                                placeholder="请输入提现金额" 
+                                min="0" 
+                                step="0.01"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="tx-form-group">
+                            <label for="txPaymentCode" class="tx-form-label">收款码</label>
+                            <div class="tx-upload-area">
+                                <input 
+                                    type="file" 
+                                    id="txPaymentCode" 
+                                    name="txPaymentCode" 
+                                    accept="image/*" 
+                                    class="tx-file-input" 
+                                    required
+                                    onchange="txPreviewImage(this)"
+                                >
+                                <div class="tx-upload-placeholder" onclick="document.getElementById('txPaymentCode').click()">
+                                    <div class="tx-upload-icon">📷</div>
+                                    <div class="tx-upload-text">点击上传收款码</div>
+                                    <div class="tx-upload-hint">支持 JPG、PNG 格式</div>
+                                </div>
+                                <img id="txPaymentCodePreview" class="tx-payment-code-preview" alt="收款码预览">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tx-modal-footer">
+                    <button type="button" class="tx-btn tx-btn-secondary" onclick="hideTxWithdrawModal()">取消</button>
+                    <button type="button" class="tx-btn tx-btn-primary" onclick="txSubmitWithdraw()" id="txSubmitBtn">确认提现</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 审核中提示弹窗 -->
+        <div id="txProcessingModal" class="tx-modal" role="dialog" aria-labelledby="txProcessingModalTitle" aria-hidden="true">
+            <div class="tx-modal-overlay"></div>
+            <div class="tx-modal-content tx-processing-content">
+                <div class="tx-processing-icon">⏳</div>
+                <h3 class="tx-processing-title">审核中</h3>
+                <p class="tx-processing-text">您的提现申请已提交，正在审核中，请耐心等待...</p>
+            </div>
+        </div>
+
+        <!-- VIP区域 -->
+        <section class="vip-section" aria-labelledby="vip-heading">
+            <h2 class="visually-hidden" id="vip-heading">VIP等级信息</h2>
+            <div class="vip-header">
+                <div class="vip-left">
+                    <div class="vip-tag">VIP 0</div>
+                    <div class="vip-status">距离 VIP 1 还需投注 5,000.00</div>
+                </div>
+                <div class="arrow-right" aria-hidden="true">&#10095;</div>
+            </div>
+            <div class="vip-progress">
+                <div class="progress-label">晋级再投注</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部菜单 -->
+        <nav class="bottom-menu" role="navigation" aria-label="账户功能菜单">
+            <h2 class="visually-hidden">账户功能菜单</h2>
+            <a href="/pay/webzh.html" class="menu-item" tabindex="0" role="button" aria-label="找回余额">
+                <div class="menu-icon-container">
+                    <div class="menu-icon">🔍</div>
+                </div>
+                <div class="menu-text">找回余额</div>
+                <div class="arrow-right-small" aria-hidden="true">&#10095;</div>
+            </a>
+            <a href="/pay/webzh.html" class="menu-item" tabindex="0" role="button" aria-label="账户明细">
+                <div class="menu-icon-container">
+                    <div class="menu-icon orange">📋</div>
+                </div>
+                <div class="menu-text">账户明细</div>
+                <div class="arrow-right-small" aria-hidden="true">&#10095;</div>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+
+    </script>
+</body>
+</html>
