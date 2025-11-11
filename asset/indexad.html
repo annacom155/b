@@ -1,1 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋擂台赛 - 赢钱真简单！</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
 
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ffff00, #ff00ff, #00ffff);
+            background-size: 400% 400%;
+            animation: bgmove 2s ease infinite;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        @keyframes bgmove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 3px 3px 0px #ff0000, 6px 6px 10px #000;
+            margin: 20px 0;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .money-text {
+            font-size: 60px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 2px 2px 0px #000, 4px 4px 8px #fff;
+            margin: 10px 0;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .sub-title {
+            font-size: 24px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .prize-info {
+            font-size: 32px;
+            color: #ff6600;
+            text-shadow: 2px 2px 4px #000;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: #ffff00;
+            font-size: 40px;
+            text-shadow: 2px 2px 0px #ff0000;
+        }
+
+        .chess-text {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: spin 2s linear infinite;
+            font-weight: bold;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .play-now {
+            background: linear-gradient(45deg, #ff0000, #ffff00);
+            color: #000;
+            border: 5px solid #fff;
+            padding: 25px 60px;
+            font-size: 36px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin: 30px 0;
+            box-shadow: 0 0 20px #ffff00, inset 0 0 20px #fff;
+            animation: pulse 1s infinite;
+            text-shadow: 1px 1px 2px #fff;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .play-now:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #ffff00, 0 0 50px #ff0000;
+        }
+
+        .warning-text {
+            font-size: 20px;
+            color: #ff00ff;
+            text-shadow: 2px 2px 4px #000;
+            margin: 20px 0;
+            font-weight: bold;
+            animation: wiggle 0.8s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+
+        .winners {
+            font-size: 18px;
+            color: #00ffff;
+            text-shadow: 1px 1px 2px #000;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .congratulations {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ffff00;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 0 20px #ffff00;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(350px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .amount {
+            color: #00ff00;
+            text-shadow: 1px 1px 2px #000;
+            font-size: 18px;
+        }
+
+        .user-id {
+            color: #ffff00;
+            text-shadow: 1px 1px 2px #000;
+            font-size: 16px;
+        }
+
+        .glitter {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffff00;
+            animation: glitter 2s infinite;
+        }
+
+        @keyframes glitter {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .extra-text {
+            font-size: 22px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .big-money {
+            font-size: 50px;
+            color: #ffff00;
+            text-shadow: 3px 3px 0px #ff0000, 6px 6px 8px #000;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <div class="title">五子棋擂台赛</div>
+        
+        <div class="chess-text">●●●●●</div>
+        
+        <div class="money-text">现金奖励</div>
+        
+        <div class="big-money">赢取 1000 元</div>
+        <div class="prize-info">最低奖金 300 元</div>
+        
+        <div class="sub-title">全民五子棋大赛</div>
+        <div class="sub-title">真人实时对战</div>
+        
+        <div class="winners">每分钟都有玩家中奖</div>
+        <div class="winners">上万人同时在线争夺</div>
+        
+        <div class="extra-text">高额奖金等你来拿</div>
+        <div class="extra-text">立即参与轻松赚钱</div>
+        
+        <a href="/index.html" class="play-now">
+            立即参战
+        </a>
+        
+        <div class="warning-text">
+            名额有限 手慢无
+        </div>
+        
+        <div class="sub-title">错过今天 再等一年</div>
+        <div class="extra-text">快速点击 不要犹豫</div>
+    </div>
+
+    <script>
+        // 生成随机用户ID
+        function generateRandomId() {
+            const chars = '0123456789';
+            let result = '用户';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // 生成随机金额
+        function generateRandomAmount() {
+            return Math.floor(Math.random() * 701) + 300; // 300-1000
+        }
+
+        // 创建恭喜消息
+        function createCongratulationsMessage() {
+            const userId = generateRandomId();
+            const amount = generateRandomAmount();
+            return `恭喜新用户${userId}成功提现${amount}元！`;
+        }
+
+        // 显示恭喜消息
+        function showCongratulations() {
+            const message = createCongratulationsMessage();
+            const congratsDiv = document.createElement('div');
+            congratsDiv.className = 'congratulations';
+            congratsDiv.innerHTML = message;
+            
+            document.body.appendChild(congratsDiv);
+
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (congratsDiv.parentNode) {
+                    congratsDiv.parentNode.removeChild(congratsDiv);
+                }
+            }, 3000);
+        }
+
+        // 每1-2秒随机弹出恭喜消息
+        function startCongratulations() {
+            setInterval(() => {
+                if (Math.random() > 0.3) { // 70%的概率显示
+                    showCongratulations();
+                }
+            }, Math.random() * 1000 + 1000); // 1-2秒随机间隔
+        }
+
+        // 页面加载后立即开始
+        window.onload = function() {
+            startCongratulations();
+            
+            // 立即显示几条消息
+            setTimeout(() => showCongratulations(), 500);
+            setTimeout(() => showCongratulations(), 1500);
+            setTimeout(() => showCongratulations(), 2500);
+        }
+
+        // 添加闪烁特效
+        function createGlitter() {
+            const glitter = document.createElement('div');
+            glitter.className = 'glitter';
+            glitter.style.left = Math.random() * 100 + '%';
+            glitter.style.top = Math.random() * 100 + '%';
+            glitter.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(glitter);
+            
+            setTimeout(() => {
+                glitter.remove();
+            }, 2000);
+        }
+        
+        setInterval(createGlitter, 300);
+    </script>
+</body>
+</html>

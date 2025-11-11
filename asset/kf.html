@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服联系方式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            line-height: 1.34;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Facebook式顶部栏 */
+        .facebook-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dadde1;
+            padding: 12px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 52px;
+        }
+
+        .facebook-content {
+            margin-top: 52px;
+            min-height: calc(100vh - 52px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        /* 主容器 - Facebook卡片样式 */
+        .contact-card {
+            background-color: #ffffff;
+            border: 1px solid #e4e6eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            width: 100%;
+            max-width: 482px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: facebookFadeIn 0.6s ease-out;
+        }
+
+        @keyframes facebookFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Facebook式标题区域 */
+        .card-header {
+            padding: 16px 16px 0;
+            border-bottom: none;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1c1e21;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e4e6eb;
+        }
+
+        /* 联系项目 - Facebook列表样式 */
+        .contact-list {
+            padding: 0 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #e4e6eb;
+            transition: background-color 0.2s;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-item:hover {
+            background-color: #f7f7f7;
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-radius: 4px;
+        }
+
+        .contact-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            background-color: #f0f2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #4b4f56;
+        }
+
+        .contact-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-label {
+            font-size: 13px;
+            color: #65676b;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .contact-value {
+            font-size: 14px;
+            color: #1c1e21;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .contact-value:hover {
+            color: #1877f2;
+        }
+
+        .email-link {
+            color: #1877f2;
+            text-decoration: none;
+        }
+
+        .email-link:hover {
+            text-decoration: underline;
+        }
+
+        .instagram-link {
+            color: #e4405f;
+            text-decoration: none;
+        }
+
+        .instagram-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Session ID 区域 - Facebook次级内容样式 */
+        .session-section {
+            padding: 16px;
+            background-color: #f7f7f7;
+            border-top: 1px solid #e4e6eb;
+            margin: 0 16px 16px;
+        }
+
+        .session-label {
+            font-size: 13px;
+            color: #65676b;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .session-id {
+            font-family: 'Courier New', Monaco, monospace;
+            font-size: 12px;
+            color: #1c1e21;
+            background-color: #ffffff;
+            padding: 8px 12px;
+            border: 1px solid #dadde1;
+            border-radius: 4px;
+            word-break: break-all;
+            display: inline-block;
+        }
+
+        /* Facebook式按钮样式 */
+        .facebook-button {
+            background-color: #1877f2;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .facebook-button:hover {
+            background-color: #166fe5;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 482px) {
+            .contact-card {
+                margin: 0 8px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            
+            .facebook-content {
+                padding: 10px;
+            }
+            
+            .contact-item:hover {
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+                border-radius: 0;
+            }
+        }
+
+        /* 加载动画 */
+        .loading-placeholder {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            width: 100%;
+            max-width: 482px;
+            height: 200px;
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* 图标字体样式 */
+        .icon-email::before { content: '✉'; }
+        .icon-dingtalk::before { content: '💬'; }
+        .icon-instagram::before { content: '📷'; }
+    </style>
+</head>
+<body>
+    <!-- Facebook式顶部栏 -->
+    <div class="facebook-header">
+        <!-- 模拟Facebook顶部导航 -->
+    </div>
+
+    <div class="facebook-content">
+        <!-- 加载占位符 (可选，用于演示加载效果) -->
+        <!-- <div class="loading-placeholder"></div> -->
+
+        <!-- 主联系卡片 - Facebook信息流卡片样式 -->
+        <div class="contact-card">
+            <div class="card-header">
+                <h2 class="card-title">客服联系方式</h2>
+            </div>
+            
+            <div class="contact-list">
+                <!-- 邮箱联系项目 -->
+                <div class="contact-item">
+                    <div class="contact-icon icon-email"></div>
+                    <div class="contact-content">
+                        <div class="contact-label">邮箱地址</div>
+                        <a href="mailto:q2020770@outlook.com" class="contact-value email-link">q2020770@outlook.com</a>
+                    </div>
+                </div>
+
+                <!-- 钉钉联系项目 -->
+                <div class="contact-item">
+                    <div class="contact-icon icon-dingtalk"></div>
+                    <div class="contact-content">
+                        <div class="contact-label">钉钉账号</div>
+                        <div class="contact-value" onclick="copyToClipboard('h5game')" style="cursor: pointer;">
+                            h5game
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instagram联系项目 -->
+                <div class="contact-item">
+                    <div class="contact-icon icon-instagram"></div>
+                    <div class="contact-content">
+                        <div class="contact-label">Instagram</div>
+                        <a href="https://instagram.com/logerrorexit" target="_blank" class="contact-value instagram-link">@logerrorexit</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session ID 区域 - Facebook次级内容 -->
+            <div class="session-section">
+                <div class="session-label">代理申请(Session ID)--安卓/ios直接浏览器搜索Session下载</div>
+                <div class="session-id">057b038294e25f69b6ce52e98ec558a85623baba893fe7bef3943b89aab6207a12</div>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <script>
+        // 复制钉钉账号到剪贴板
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // 创建临时提示
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 70px;
+                    right: 20px;
+                    background-color: #1877f2;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                `;
+                toast.textContent = '钉钉账号已复制: ' + text;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 2000);
+            }).catch(function(err) {
+                console.log('复制失败: ', err);
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                alert('钉钉账号已复制: ' + text);
+            });
+        }
+
+        // 复制所有联系方式
+        function copyAllContacts() {
+            const contacts = [
+                '客服联系方式',
+                '邮箱: q2020770@outlook.com',
+                '钉钉: h5game',
+                'Instagram: @logerrorexit',
+                'Session ID: 057b038294e25f69b6ce52e98ec558a85623baba893fe7bef3943b89aab6207a12'
+            ].join('\n');
+
+            navigator.clipboard.writeText(contacts).then(function() {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 70px;
+                    right: 20px;
+                    background-color: #1877f2;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                `;
+                toast.textContent = '所有联系方式已复制到剪贴板';
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 3000);
+            }).catch(function(err) {
+                console.log('复制失败: ', err);
+                alert('复制功能暂不可用，请手动复制联系方式');
+            });
+        }
+
+        // 添加滑入动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                0% {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 页面加载完成提示
+        window.addEventListener('load', function() {
+            console.log('Facebook式客服页面加载完成');
+        });
+    </script>
+</body>
+</html>
+=
