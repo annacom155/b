@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动画充值按钮</title>
+   <button onclick="window.location.href='/pay/pal'" style="width:100px;height:35px;font-size:14px;padding:0;border:none;border-radius:5px;background:linear-gradient(135deg, #666, #333);color:gray;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+  <div style="width:20px;height:20px;margin-right:5px;animation:rotate 2s linear infinite;">
+    <svg width="20" height="20" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="coinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#d4af37" />
+          <stop offset="100%" stop-color="#b8941f" />
+        </linearGradient>
+        <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f5e6b3" />
+          <stop offset="100%" stop-color="#e5d6a3" />
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="95" fill="url(#coinGradient)" stroke="#a67c00" stroke-width="2"/>
+      <circle cx="100" cy="100" r="97" fill="none" stroke="#8b6914" stroke-width="6" stroke-dasharray="3,5"/>
+      <circle cx="100" cy="100" r="80" fill="url(#innerGradient)" stroke="#d4af37" stroke-width="1"/>
+      <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="90" font-weight="bold" fill="#8b4513">￥</text>
+    </svg>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-start;">
+    <span style="color:gray;animation:bounce 1s infinite;line-height:1;font-size:12px;">0.00CNY</span>
+    <span style="color:yellow;line-height:1;font-size:10px;">点击充值</span>
+  </div>
+</button>
+
+<style>
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes rotate {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+</style>
+
+</body>
+
+</html>
